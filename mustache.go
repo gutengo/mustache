@@ -291,14 +291,14 @@ func (tmpl *Template) parseSection(section *sectionElement) error {
 
 			if tag[len(tag)-1] == '}' {
 				//use a raw tag
-				section.elems = append(section.elems, &varElement{name, true})
+				section.elems = append(section.elems, &varElement{name, false})
 			}
 		case '&':
 			section.writeRawBody(tmpl.otag + tag + tmpl.ctag)
-			section.elems = append(section.elems, &varElement{strings.TrimSpace(tag[1:]), true})
+			section.elems = append(section.elems, &varElement{strings.TrimSpace(tag[1:]), false})
 		default:
 			section.writeRawBody(tmpl.otag + tag + tmpl.ctag)
-			section.elems = append(section.elems, &varElement{tag, false})
+			section.elems = append(section.elems, &varElement{tag, true})
 		}
 	}
 
@@ -388,12 +388,12 @@ func (tmpl *Template) parse() error {
 		case '{':
 			//use a raw tag
 			if tag[len(tag)-1] == '}' {
-				tmpl.elems = append(tmpl.elems, &varElement{strings.TrimSpace(tag[1 : len(tag)-1]), true})
+				tmpl.elems = append(tmpl.elems, &varElement{strings.TrimSpace(tag[1 : len(tag)-1]), false})
 			}
 		case '&':
-			tmpl.elems = append(tmpl.elems, &varElement{strings.TrimSpace(tag[1:]), true})
+			tmpl.elems = append(tmpl.elems, &varElement{strings.TrimSpace(tag[1:]), false})
 		default:
-			tmpl.elems = append(tmpl.elems, &varElement{tag, false})
+			tmpl.elems = append(tmpl.elems, &varElement{tag, true})
 		}
 	}
 
