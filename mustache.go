@@ -12,6 +12,7 @@ import (
 	"strings"
 )
 
+type RenderFunc func (text string) string
 const defaultOtag = "{{"
 const defaultCtag = "}}"
 
@@ -599,7 +600,10 @@ func renderSection(section *sectionElement, contextChain []interface{}, buf io.W
 		case reflect.Map, reflect.Struct:
 			contexts = append(contexts, value)
 		case reflect.Func:
-			out := val.Call([]reflect.Value{reflect.ValueOf(section.rawBody)})
+			var cb RenderFunc = func(text string) string {
+				return evaluate(text, section.otag, section.ctag, contextChain)
+			}
+			out := val.Call([]reflect.Value{reflect.ValueOf(section.rawBody), reflect.ValueOf(cb)})
 			if len(out) > 0 && out[0].Kind() == reflect.String {
 				content := evaluate(out[0].String(), section.otag, section.ctag, contextChain)
 
