@@ -13,8 +13,8 @@ import (
 )
 
 type RenderFunc func (text string) string
-const defaultOtag = "{{"
-const defaultCtag = "}}"
+var Otag = "{{"
+var Ctag = "}}"
 
 // environment is used to provide an environment and symbol table for recursive partials
 type environment struct {
@@ -650,7 +650,7 @@ func renderElement(element interface{}, contextChain []interface{}, buf io.Write
 			case reflect.Func:
 				out := fn.Call(nil)
 				if len(out) > 0 && out[0].Kind() == reflect.String {
-					content = evaluate(out[0].String(), defaultOtag, defaultCtag, contextChain)
+					content = evaluate(out[0].String(), Otag, Ctag, contextChain)
 				} else {
 					content = ""
 				}
@@ -699,7 +699,7 @@ func (tmpl *Template) RenderInLayout(layout *Template, context ...interface{}) s
 }
 
 func ParseString(data string) (*Template, error) {
-	return parseString(data, defaultOtag, defaultCtag, newEnvironment())
+	return parseString(data, Otag, Ctag, newEnvironment())
 }
 
 func parseString(data string, otag string, ctag string, environment environment) (*Template, error) {
@@ -731,7 +731,7 @@ func parseFile(filename string, indent string, environment environment) (*Templa
 
 	name := basename[0 : len(basename)-len(ext)]
 
-	tmpl := Template{string(data), defaultOtag, defaultCtag, 0, 1, dirname, []interface{}{}, environment}
+	tmpl := Template{string(data), Otag, Ctag, 0, 1, dirname, []interface{}{}, environment}
 	tmpl.environment.partials[name] = &tmpl
 	err = tmpl.parse()
 
